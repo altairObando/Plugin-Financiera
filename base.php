@@ -16,10 +16,13 @@ defined('ABSPATH') or die('Algo salio mal :(');
 
 include(plugin_dir_path(__FILE__).'includes/register.php');
 include(plugin_dir_path(__FILE__).'includes/financieraController.php');
+include(plugin_dir_path(__FILE__).'includes/calculoForm.php');
 register_activation_hook(__FILE__, 'register_tables');
 register_deactivation_hook(__FILE__, 'delete_tables');
 
 
 add_action('rest_api_init', 'financiera');
+add_action('wp_head', 'wpb_hook_javascript');    
+add_shortcode( 'codesign_calculadora_form', 'cf_shortcode' );
 
 ?>

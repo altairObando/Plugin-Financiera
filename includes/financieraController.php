@@ -1,4 +1,7 @@
 <?php
+
+    include(plugin_dir_path(__FILE__).'tasaCambio.php');
+    
     function financiera(){
         register_rest_route('financiera/v1','financieras/', [
             'methods' => 'GET',
@@ -22,8 +25,12 @@
 
             ]
         ]);
+        register_rest_route('financiera/v1', 'tasaCambio/',[
+            'methods' => 'GET',
+            'callback' => 'get_tasa_cambio'
+        ]);
     };
-    
+
     function get($request){
         global $wpdb;
 		$tablaFinanciera = $wpdb->prefix."financiera";
@@ -68,4 +75,6 @@
     function delete($request){
         
     }
+
+
 ?>
