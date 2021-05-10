@@ -66,6 +66,6 @@
 		return rest_ensure_response(array('ok' => true,'mensaje' => 'Financiera Actualizada.'));
     }
     function delete($request){
-
+        
     }
 ?>
