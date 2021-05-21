@@ -2,13 +2,7 @@ import React from 'react'
 import { Columns, Form, Icon } from 'react-bulma-components';
 import { FormatNumber, PAGO } from './functions';
 
- /**
- * Calcula el valor actual de un préstamo o una inversión a partir de una tasa de interés constante
- * @param {double} tasa valor de la tasa porcentual ejm: 15.75%
- * @param {int} periodos Numero de periodos/cuotas ejm: 60
- * @param {double} pago Valor de cada cuota
- */
-
+ 
 const styles = {
     title: {
         textAlign: "center",

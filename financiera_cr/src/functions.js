@@ -1,3 +1,10 @@
+/**
+ * Calcula el valor actual de un préstamo o una inversión a partir de una tasa de interés constante
+ * @param {double} tasa valor de la tasa porcentual ejm: 15.75%
+ * @param {int} periodos Numero de periodos/cuotas ejm: 60
+ * @param {double} pago Valor de cada cuota
+ */
+
 export const VA = (tasa, periodos, pago) => {
     var f1 = tasa / 100 / 12;
     var f2 = Math.pow(1 + f1, periodos);
