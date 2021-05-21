@@ -6,44 +6,48 @@
         global $wpdb;
 
         $tablaFinanciera = $wpdb->prefix."financiera";
-        $tablaRangoDeudor = $wpdb->prefix."rango_deudor";
-        $tablaTasa = $wpdb->prefix."tasa";
+        $tablaClientes = $wpdb->prefix."clientes";
 
-        $createdFinanciera = dbDelta(
-            "CREATE TABLE $tablaFinanciera (
-                id int(11) NOT NULL,
-                nombre varchar(100) NOT NULL,
-                rangoDeudorId int(11) DEFAULT NULL
-            )"
-        );
-
-        $createdTasa = dbDelta("CREATE TABLE $tablaTasa (
-            id int(11) NOT NULL,
-            tasa decimal(16,4) NOT NULL,
-            fecha date NOT NULL,
-            activo bit(1) NOT NULL,
-            financieraId int(11) DEFAULT NULL
-          )");
-        
-        $createdFinanciera = dbDelta(
-            "CREATE TABLE $tablaRangoDeudor (
-                id int(11) NOT NULL,
-                valorDesde decimal(16,4) NOT NULL,
-                valorHasta decimal(16,4) NOT NULL,
-                porcentajeCuota decimal(16,4) NOT NULL,
-                rebajoAutomatico decimal(16,4) NOT NULL,
-                porcentajeDeudal decimal(16,4) NOT NULL,
-                activo bit(1) NOT NULL
-              )"
+        $createdFinanciera = dbDelta("CREATE TABLE $tablaFinanciera
+            (
+            `id`          int NOT NULL AUTO_INCREMENT ,
+            `nombre`      varchar(45) NOT NULL ,
+            `descripcion` varchar(250) NULL ,
+            `tasa`        decimal(16,4) NOT NULL ,
+            `cuotas`      int NOT NULL ,
+            `dac`         varchar(50000) NOT NULL ,
+            PRIMARY KEY (`id`));");
+            
+        $crearClientes = dbDelta("CREATE TABLE $tablaClientes
+            (
+            `id`                  int NOT NULL AUTO_INCREMENT ,
+            `doc_identidad`       varchar(15) NOT NULL ,
+            `nombre`              varchar(45) NOT NULL ,
+            `segundo_nombre`      varchar(45) NULL ,
+            `apellido`            varchar(50) NULL ,
+            `segundo_apellido`    varchar(50) NOT NULL ,
+            `direccion`           varchar(250) NOT NULL ,
+            `direccion_adicional` varchar(250) NULL ,
+            `ingreso_bruto`       decimal(16, 4) NOT NULL ,
+            `cuotas_asignadas`    decimal NULL ,
+            `cuotas_pagadas`      decimal NULL ,
+            `cuotas_pendientes`   decimal NULL ,
+            `es_asalariado`       bit NOT NULL ,
+            `telefono`            varchar(15) NULL ,
+            PRIMARY KEY (`id`)
+            );"
         );
 
     }
 
     function delete_tables(){
+        $tablaFinanciera = $wpdb->prefix."financiera";
+        $tablaClientes = $wpdb->prefix."clientes";
+
         global $wpdb;
-        dbDelta('DROP TABLE '.$wpdb->prefix."financiera");
-        dbDelta('DROP TABLE '.$wpdb->prefix."rango_deudor");
-        dbDelta('DROP TABLE '.$wpdb->prefix."tasa");
+        dbDelta('DROP TABLE '.$tablaFinanciera);
+        dbDelta('DROP TABLE '.$tablaClientes);
+        
     }
 
 ?>
