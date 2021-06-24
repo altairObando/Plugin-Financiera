@@ -6,7 +6,7 @@
         global $wpdb;
 
         $tablaFinanciera = $wpdb->prefix."financiera";
-        $tablaClientes = $wpdb->prefix."clientes";
+        $tablaNiveles = $wpdb->prefix."nivelesDeEndeudamiento";
 
         $createdFinanciera = dbDelta("CREATE TABLE $tablaFinanciera
             (
@@ -18,22 +18,14 @@
             `dac`         varchar(50000) NOT NULL ,
             PRIMARY KEY (`id`));");
             
-        $crearClientes = dbDelta("CREATE TABLE $tablaClientes
+        $crearNiveles = dbDelta("CREATE TABLE $tablaNiveles
             (
             `id`                  int NOT NULL AUTO_INCREMENT ,
-            `doc_identidad`       varchar(15) NOT NULL ,
-            `nombre`              varchar(45) NOT NULL ,
-            `segundo_nombre`      varchar(45) NULL ,
-            `apellido`            varchar(50) NULL ,
-            `segundo_apellido`    varchar(50) NOT NULL ,
-            `direccion`           varchar(250) NOT NULL ,
-            `direccion_adicional` varchar(250) NULL ,
-            `ingreso_bruto`       decimal(16, 4) NOT NULL ,
-            `cuotas_asignadas`    decimal NULL ,
-            `cuotas_pagadas`      decimal NULL ,
-            `cuotas_pendientes`   decimal NULL ,
-            `es_asalariado`       bit NOT NULL ,
-            `telefono`            varchar(15) NULL ,
+            `montoDesde`          decimal(16,4) NULL,
+            `montoHasta`          decimal(16,4) NOT NULL,
+            `relacionCuota`       decimal(16,4) NOT NULL,
+            `rebajoAutomatico`    decimal(16,4) NOT NULL,
+            `valor`               decimal(16,4) NOT NULL
             PRIMARY KEY (`id`)
             );"
         );

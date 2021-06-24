@@ -1,6 +1,8 @@
 <?php
 
     include(plugin_dir_path(__FILE__).'tasaCambio.php');
+    include(plugin_dir_path(__FILE__).'calculoForm.php');
+
     
     function financiera(){
         register_rest_route('financiera/v1','financieras/', [
@@ -38,6 +40,10 @@
         register_rest_route('financiera/v1', 'tasaCambio/',[
             'methods' => 'GET',
             'callback' => 'get_tasa_cambio'
+        ]);
+        register_rest_route("financiera/v1", "sendMail/", [
+            "methods" => "GET",
+            "callback" => "send_mail"
         ]);
     };
 
@@ -101,5 +107,30 @@
         $tablaFinanciera = $wpdb->prefix."financiera";
         $id = $request->get_param('id');
         $wpdb->delete($tablaFinanciera, array("id" => $id));
+    }
+    /**
+     * Filter the mail content type.
+     */
+    function wpdocs_set_html_mail_content_type() {
+        return 'text/html';
+    }
+    function send_mail($request){
+        $values = json_decode($request->get_param("data"));
+        $html = get_template();
+        foreach ($values as $key => $value) {
+            $html = str_replace(`%$key%`, $value, $html);
+        }
+        
+        
+        add_filter( 'wp_mail_content_type', 'wpdocs_set_html_mail_content_type' );
+
+        $destino = $request->get_param("destinatario");
+        $titulo  = "Cotización de Credito";
+        $mensaje = $html;
+
+        wp_mail($destino, $titulo, $mensaje);
+        
+        // Reset content-type to avoid conflicts -- https://core.trac.wordpress.org/ticket/23578
+        remove_filter( 'wp_mail_content_type', 'wpdocs_set_html_mail_content_type' );
     }
 ?>

@@ -23,14 +23,13 @@ register_deactivation_hook(__FILE__, 'delete_tables');
 
 
 add_action('rest_api_init', 'financiera');
-add_action('wp_head', 'wpb_hook_javascript');    
-add_shortcode( 'codesign_calculadora_form', 'cf_shortcode' );
+// add_action('wp_head', 'wpb_hook_javascript');    
+// add_shortcode( 'codesign_calculadora_form', 'cf_shortcode' );
 
 
 function initCors( $value ) {
     $origin_url = '*';
-
-  
+      
     header( 'Access-Control-Allow-Origin: ' . $origin_url );
     header( 'Access-Control-Allow-Methods: GET' );
     header( 'Access-Control-Allow-Credentials: true' );
