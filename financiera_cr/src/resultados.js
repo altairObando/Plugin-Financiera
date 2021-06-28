@@ -1,5 +1,5 @@
 import React from 'react'
-import { Columns, Form, Icon } from 'react-bulma-components';
+import { Button, Columns, Form, Icon } from 'react-bulma-components';
 import { FormatNumber, PAGO } from './functions';
 
  
@@ -97,6 +97,28 @@ const Resultados =(props) => {
                     </Icon>
                 </Form.Control>
             </Form.Field>
+            <br></br>
+            <Columns>
+                <Columns.Column size="four-fifths">
+                    <Form.Field>
+                        <Form.Label>Correo Electronico</Form.Label>
+                            <Form.Control>
+                                <Form.Input value={data.emailClient} name="emailClient"  onChange={_handleOnChange} />
+                                <Icon align="left" size="small">
+                                    <i className="fa fa-at"></i>
+                                </Icon>
+                            </Form.Control>
+                    </Form.Field>
+                </Columns.Column>
+                <Columns.Column>
+                    <Button color="info" style={{marginTop:"2em"}}>
+                        <Icon>
+                            <i className="fa fa-envelope"></i>
+                        </Icon>
+                    </Button>
+                </Columns.Column>
+            </Columns>
+            
             </Columns.Column>
        </Columns>
    )

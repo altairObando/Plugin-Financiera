@@ -1,6 +1,7 @@
 <?php
 
     include(plugin_dir_path(__FILE__).'tasaCambio.php');
+    include(plugin_dir_path(__FILE__).'mail.php');
     include(plugin_dir_path(__FILE__).'calculoForm.php');
 
     

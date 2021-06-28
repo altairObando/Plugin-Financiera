@@ -21,7 +21,8 @@ var template = {
   sugerenciaColones: 0,
   sugerenciaDolares: 0,
   montoSolicitado: 0,
-  montoCuotaFinal: 0
+  montoCuotaFinal: 0,
+  emailClient : ''
 }
 
 const Calculadora = (any) =>{
@@ -69,8 +70,9 @@ const Calculadora = (any) =>{
 
     const _changeTab = (tab) => {
       var newState = {};
-      Object.keys(activeTab).filter( i => (i !== tab.currentTarget.name)).map(n => newState[n] = false)
-      newState[tab.currentTarget.name] = true;
+      var name = tab.currentTarget && tab.currentTarget.name ? tab.currentTarget.name : tab;
+      Object.keys(activeTab).filter( i => (i !== name)).map(n => newState[n] = false)
+      newState[name] = true;
       setActiveTab(newState);
     }
 
@@ -81,6 +83,44 @@ const Calculadora = (any) =>{
         display: 'none'
       }
     }
+
+    const onNextClick = (event) => {
+       var currentTab = [];
+       Object.keys(activeTab).forEach(key => {
+         if(activeTab[key]) currentTab.push(key)
+       });
+       var nextTab = currentTab[0].slice(0, -1) + (parseInt(currentTab[0].slice(-1)) + 1);
+       if(Object.keys(activeTab).includes(nextTab)){
+          _changeTab(nextTab)
+       }
+
+    }
+
+    const onBackButtonClick = () => {
+      var currentTab = [];
+       Object.keys(activeTab).forEach(key => {
+         if(activeTab[key]) currentTab.push(key)
+       });
+       var nextTab = currentTab[0].slice(0, -1) + (parseInt(currentTab[0].slice(-1)) - 1);
+       if(Object.keys(activeTab).includes(nextTab)){
+          _changeTab(nextTab)
+       }
+    }
+
+    async function sendEmail(event) {
+    event.preventDefault();
+
+    const response = await fetch("http://localhost/wordpress/wp-json/financiera/v1/sendmail", {
+      method: "POST",
+      cache: "no-cache",
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+
+    console.log(response.json());
+  }
 
   return (
     <Container>
@@ -105,7 +145,7 @@ const Calculadora = (any) =>{
             <span>Resultados</span>
           </Tabs.Tab>
         </Tabs>
-        <form>
+        <form onSubmit={ sendEmail }>
           <div style={visibility("grupo1")} >
             <Form.Field>
               <Form.Label>Ingreso Bruto en Colones</Form.Label>
@@ -270,14 +310,14 @@ const Calculadora = (any) =>{
             <Level>
               <Level.Side align="left">
                 <Level.Item>
-                  <Button color="info" size="small" type="button" isStatic={activeTab.grupo1}>
+                  <Button color="info" size="small" type="button" isStatic={activeTab.grupo1} onClick={onBackButtonClick}>
                     Regresar
                   </Button>
                 </Level.Item>
               </Level.Side>
               <Level.Side align="right">
                 <Level.Item>
-                  <Button color="info" size="small" type="button" >
+                  <Button color="info" size="small" type="button" onClick={onNextClick} isStatic={activeTab.grupo4}>
                     Siguiente
                   </Button>
                 </Level.Item>

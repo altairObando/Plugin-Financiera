@@ -11,14 +11,7 @@ function addAdminPageContent(){
         'crudOperationsProducto',
         'dashicons-calculator'
     );
-    // add_menu_page(
-    //     'CoDesign',
-    //     'Niveles Endeudamiento',
-    //     'manage_options',
-    //     'reglas',
-    //     'crudOperationsReglas',
-    //     'dashicons-filter'
-    // );
+    add_submenu_page('productos', 'CoDesign', 'Reglas', 'manage_options' , 'Reglas',  'crudOperationsReglas' );
 }
 
 
