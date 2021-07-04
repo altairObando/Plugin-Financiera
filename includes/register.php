@@ -20,15 +20,22 @@
             
         $crearNiveles = dbDelta("CREATE TABLE $tablaNiveles
             (
-            `id`                  int NOT NULL AUTO_INCREMENT ,
+            `id`                  int NOT NULL AUTO_INCREMENT,
+            `productoId`          int NOT NULL,
             `montoDesde`          decimal(16,4) NULL,
             `montoHasta`          decimal(16,4) NOT NULL,
             `relacionCuota`       decimal(16,4) NOT NULL,
             `rebajoAutomatico`    decimal(16,4) NOT NULL,
-            `valor`               decimal(16,4) NOT NULL
+            `valor`               decimal(16,4) NOT NULL,
             PRIMARY KEY (`id`)
             );"
         );
+
+        dbDelta("ALTER TABLE `wp_nivelesdeendeudamiento` 
+        ADD CONSTRAINT `Niveles_FK_ProductoId_Financiera_PK_Id` 
+        FOREIGN KEY (`productoId`) REFERENCES `wp_financiera`(`id`) 
+        ON DELETE CASCADE 
+        ON UPDATE CASCADE;");
 
     }
 

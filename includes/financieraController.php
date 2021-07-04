@@ -1,9 +1,6 @@
 <?php
 
     include(plugin_dir_path(__FILE__).'tasaCambio.php');
-    include(plugin_dir_path(__FILE__).'mail.php');
-    include(plugin_dir_path(__FILE__).'calculoForm.php');
-
     
     function financiera(){
         register_rest_route('financiera/v1','financieras/', [
@@ -46,6 +43,14 @@
             "methods" => "GET",
             "callback" => "send_mail"
         ]);
+        register_rest_route('financiera/v1', 'niveles/',[
+            'methods' => 'GET',
+            'callback' => 'get_reglas',
+            'args' => [
+                'productoId' => ['required' => true, 'type' => 'number']
+            ]
+        ]);
+
     };
 
     function get($request){
@@ -109,6 +114,29 @@
         $id = $request->get_param('id');
         $wpdb->delete($tablaFinanciera, array("id" => $id));
     }
+
+    /**
+     * Obtener niveles por producto
+     */
+    function get_reglas($request){
+        global $wpdb;
+        $tabla = $wpdb->prefix."nivelesDeEndeudamiento";
+        $productoId = $request->get_param("productoId");
+        if($productoId == 0){
+            return array(
+                'success' => false,
+                'response' => 'Producto Id incorrecto'
+            );
+        }
+
+        $query = "SELECT * FROM $tabla WHERE productoId = '$productoId'";
+        $response = $wpdb->get_results($query);
+        return rest_ensure_response(array(
+            'success' => true,
+            'response' => $response
+        ));
+    }
+
     /**
      * Filter the mail content type.
      */
@@ -117,9 +145,15 @@
     }
     function send_mail($request){
         $values = json_decode($request->get_param("data"));
-        $html = get_template();
+        $html = get_cr_email_template();
         foreach ($values as $key => $value) {
-            $html = str_replace(`%$key%`, $value, $html);
+
+            if(is_bool($value)){
+               $val = $value === true ? 'Sí' : 'No';
+               $html = str_replace('{'. $key . '}', $val, $html);
+            }
+
+            $html = str_replace('{'. $key . '}', $value, $html);
         }
         
         
@@ -127,11 +161,16 @@
 
         $destino = $request->get_param("destinatario");
         $titulo  = "Cotización de Credito";
-        $mensaje = $html;
+        $mensaje = htmlentities($html);
 
-        wp_mail($destino, $titulo, $mensaje);
+        $result  = wp_mail($destino, $titulo, $mensaje);
         
         // Reset content-type to avoid conflicts -- https://core.trac.wordpress.org/ticket/23578
         remove_filter( 'wp_mail_content_type', 'wpdocs_set_html_mail_content_type' );
+        return array(
+            'success' => $result,
+            'mailRequest' => $mensaje,
+            'params' => $values
+        );
     }
 ?>

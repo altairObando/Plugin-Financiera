@@ -22,8 +22,11 @@ var template = {
   sugerenciaDolares: 0,
   montoSolicitado: 0,
   montoCuotaFinal: 0,
-  emailClient : ''
+  emailClient : '',
+  productoId: 0,
+  moneda: ''
 }
+const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 const Calculadora = (any) =>{
     const [data, setData] = React.useState(template)
@@ -109,17 +112,21 @@ const Calculadora = (any) =>{
 
     async function sendEmail(event) {
     event.preventDefault();
-
-    const response = await fetch("http://localhost/wordpress/wp-json/financiera/v1/sendmail", {
-      method: "POST",
+    if(!re.test(String(data.emailClient).toLocaleLowerCase())){
+      alert("Correo invalido"); return;
+    }
+    const response = await fetch("http://localhost/wordpress/wp-json/financiera/v1/sendmail?data=" + JSON.stringify(data), {
+      method: "GET",
       cache: "no-cache",
       headers: {
         'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
+      }
     });
-
-    console.log(response.json());
+    var result = await response.json();
+    if(result.success)
+      alert("Correo enviado")
+    else
+      console.log(result)
   }
 
   return (

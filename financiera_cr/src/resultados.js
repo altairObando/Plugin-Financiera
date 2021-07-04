@@ -17,6 +17,10 @@ const Resultados =(props) => {
        var result = FormatNumber(PAGO(data.tasa/100/12, data.plazo, -montoSolicitado).toFixed(2))
        setData({...data, montoCuotaFinal: result, montoSolicitado: montoSolicitado })
    }
+   const handleEmailChange = e => {
+    setData({...data, [e.target.name]: e.target.value})
+    }
+    
    return(
        <Columns>
           <Columns.Column>
@@ -67,9 +71,9 @@ const Resultados =(props) => {
                     <div className="field">
                         <p className="control">
                         <span className="select is-fullwidth">
-                            <select name="moneda">
-                            <option value="0">COLONES</option>
-                            <option value="1">DÓLARES</option>
+                            <select name="moneda" value={ data.moneda } onChange={ handleEmailChange }> 
+                            <option value="COLONES">COLONES</option>
+                            <option value="DÓLARES">DÓLARES</option>
                             </select>
                         </span>
                         </p>
@@ -103,7 +107,7 @@ const Resultados =(props) => {
                     <Form.Field>
                         <Form.Label>Correo Electronico</Form.Label>
                             <Form.Control>
-                                <Form.Input value={data.emailClient} name="emailClient"  onChange={_handleOnChange} />
+                                <Form.Input value={data.emailClient} name="emailClient"  onChange={handleEmailChange} />
                                 <Icon align="left" size="small">
                                     <i className="fa fa-at"></i>
                                 </Icon>

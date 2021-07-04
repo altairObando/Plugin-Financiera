@@ -8,59 +8,7 @@ const SelectProducto = (props) => {
     const {setLoading} = props.loader;
     const {data, setData } = props.data;
 
-    const _handleChange = (event) => {
-        if(event.target.value){
-            const pro = producto.filter(item => (item.id === event.target.value))[0];
-            const DAC = JSON.parse(pro.dac);
-            var porcentaje = obtenerValorDAC(DAC);
-            var cupo = data.cupoCredito.replaceAll("¢","").replaceAll("$","").replaceAll(",","").trim();
-            const cupoColones = (cupo * porcentaje / 100).toFixed(2);
-            const cupoDolares = (cupoColones / data.tipoCambio).toFixed(2);
-            setConfigurarion(DAC);
-            setData({...data, 
-                    tasa: pro.tasa, 
-                    plazo: pro.cuotas, 
-                    porcentajeDeuda: porcentaje+'%',
-                    creditoColones:  FormatNumber(cupoColones),
-                    creditoDolares:  FormatNumber(cupoDolares, "$")
-                })
-
-
-            if(props.onProductoSelect && typeof(props.onProductoSelect) == "function"){
-                props.onProductoSelect()
-            }
-            
-        }else
-        alert("Seleccione un producto de la lista.")
-    }
-    
-    const obtenerValorDAC = (configuracion) => {
-        if(configuracion.nivelesDeEndeudamiento.length === 0) return;
-        var ingreso = data.ingresoNeto.replaceAll("¢","").replaceAll("$","").replaceAll(",","").trim();
-        if(ingreso <= 0)
-            return ingreso;
-        var porcentajeEndeudamiento = 0;
-        var first = null;
-
-        if(configuracion.nivelesDeEndeudamiento === 1){
-            porcentajeEndeudamiento = configuracion.nivelesDeEndeudamiento[0].montoDesde >= ingreso && 
-                                      configuracion.nivelesDeEndeudamiento[0].montoHasta <= ingreso ? 
-                                      configuracion.nivelesDeEndeudamiento[0].valor : 0;
-            return porcentajeEndeudamiento; 
-        }
-        first = configuracion.nivelesDeEndeudamiento[0];
-        var current = configuracion.nivelesDeEndeudamiento.filter( tasa => {
-            if(tasa.valor === first.valor ) return first.montoHasta >= ingreso;
-            else return tasa.montoDesde <= ingreso;                
-        });
-
-        if(current.length !== 0)
-            porcentajeEndeudamiento = current.length > 1 ? current[current.length - 1].valor : current[0].valor;
-        else
-            porcentajeEndeudamiento = 0;        
-        return porcentajeEndeudamiento;
-    }
-
+    // Obtener los productos configurados
     useEffect(() => {
         setLoading(true)
         fetch('http://localhost/wordpress/wp-json/financiera/v1/financieras')
@@ -71,6 +19,7 @@ const SelectProducto = (props) => {
         .then(productos => setProductos(productos));
     }, [setLoading])
 
+    // Actualizo las tasas y plazos de pago
     useEffect(() => {
         var pago = (data.creditoColones || '').replaceAll("¢","").replaceAll("$","").replaceAll(",","").trim();
         const result = (VA(data.tasa, data.plazo, pago)).toFixed(2);
@@ -84,6 +33,72 @@ const SelectProducto = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data.tasa, data.plazo, data.creditoColones, data.tipoCambio] )
 
+    /*
+    * Obtener los niveles por producto al seleccionar.
+    */
+    useEffect(() => {
+        ObtenerNivelesEndeudamiento();
+        if(props.onProductoSelect && typeof(props.onProductoSelect) == "function"){
+            props.onProductoSelect()
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [data.productoId])
+
+    async function ObtenerNivelesEndeudamiento(){
+        if(data.productoId !== 0){
+            const request = await fetch(`http://localhost/wordpress/wp-json/financiera/v1/niveles?productoId=${data.productoId}`);
+            const result = await request.json();
+            if(result.success){
+                setConfigurarion({ ...configuracion, "nivelesDeEndeudamiento" : result.response });
+                SetProductoConfig(result.response);
+            }else
+            alert("Error al obtener configuracion")
+        }
+    }
+    const SetProductoConfig = (config) => {
+        if(data.productoId === 0) return;
+        // Set Configuracion producto
+        const prod        = producto.filter(item => (item.id === data.productoId))[0];
+        const porcentaje  = ObtenerValorDAC(config);
+        const cupo        = data.cupoCredito.replaceAll("¢","").replaceAll("$","").replaceAll(",","").trim();
+        const cupoColones = (cupo * porcentaje / 100).toFixed(2);
+        const cupoDolares = (cupoColones / data.tipoCambio).toFixed(2);
+        // Actualizo tasas
+        setData({...data, 
+                    tasa: prod.tasa, 
+                    plazo: prod.cuotas, 
+                    porcentajeDeuda: porcentaje+'%',
+                    creditoColones:  FormatNumber(cupoColones),
+                    creditoDolares:  FormatNumber(cupoDolares, "$")
+                });
+      
+    }
+    const ObtenerValorDAC = (config) => {
+        if(config.length === 0) return;
+        var ingreso = data.ingresoNeto.replaceAll("¢","").replaceAll("$","").replaceAll(",","").trim();
+        if(ingreso <= 0)
+            return ingreso;
+        var porcentajeEndeudamiento = 0;
+        var first = null;
+
+        if(config.length === 1){
+            porcentajeEndeudamiento = config[0].montoDesde >= ingreso && 
+                                      config[0].montoHasta <= ingreso ? 
+                                      config[0].valor : 0;
+            return porcentajeEndeudamiento; 
+        }
+        first = config[0];
+        var current = config.filter( tasa => {
+            if(tasa.valor === first.valor ) return first.montoHasta >= ingreso;
+            else return tasa.montoDesde <= ingreso;                
+        });
+
+        if(current.length !== 0)
+            porcentajeEndeudamiento = current.length > 1 ? current[current.length - 1].valor : current[0].valor;
+        else
+            porcentajeEndeudamiento = 0;        
+        return porcentajeEndeudamiento;
+    }
     const _handleInputChange= (event) => {
         setData({...data, [event.target.name]: event.target.value})
     }
@@ -100,7 +115,7 @@ const pStyle = {
                     <div className="field">
                         <p className="control">
                             <span className="select is-fullwidth">
-                                <select name="producto" onChange={_handleChange} id="productoSelect">
+                                <select name="productoId" value={data.productoId} onChange={_handleInputChange} id="productoSelect">
                                     <option value="">Seleccione un producto de la lista*</option>
                                 {
                                     producto.map( p => {
