@@ -11,7 +11,7 @@ const SelectProducto = (props) => {
     // Obtener los productos configurados
     useEffect(() => {
         setLoading(true)
-        fetch('http://localhost/wordpress/wp-json/financiera/v1/financieras')
+        fetch('https://financialsolutionscr.com/wp-json/financiera/v1/financieras')
         .then(response => {
             setLoading(false);
             return response.json()
@@ -46,7 +46,7 @@ const SelectProducto = (props) => {
 
     async function ObtenerNivelesEndeudamiento(){
         if(data.productoId !== 0){
-            const request = await fetch(`http://localhost/wordpress/wp-json/financiera/v1/niveles?productoId=${data.productoId}`);
+            const request = await fetch(`https://financialsolutionscr.com/wp-json/financiera/v1/niveles?productoId=${data.productoId}`);
             const result = await request.json();
             if(result.success){
                 setConfigurarion({ ...configuracion, "nivelesDeEndeudamiento" : result.response });

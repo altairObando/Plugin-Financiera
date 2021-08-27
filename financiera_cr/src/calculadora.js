@@ -49,7 +49,7 @@ const Calculadora = (any) =>{
 
     
     const _getTasaCambio = () =>{
-      fetch("http://localhost/wordpress/wp-json/financiera/v1/tasaCambio")
+      fetch("https://financialsolutionscr.com/wp-json/financiera/v1/tasaCambio")
       .then(response => { setLoading(false); return response.json() })
       .then(value => {
         setData({...data, tipoCambio: new Intl.NumberFormat("es-NI").format(value)})
@@ -115,7 +115,7 @@ const Calculadora = (any) =>{
     if(!re.test(String(data.emailClient).toLocaleLowerCase())){
       alert("Correo invalido"); return;
     }
-    const response = await fetch("http://localhost/wordpress/wp-json/financiera/v1/sendmail?data=" + JSON.stringify(data), {
+    const response = await fetch("https://financialsolutionscr.com/wp-json/financiera/v1/sendmail?data=" + JSON.stringify(data), {
       method: "GET",
       cache: "no-cache",
       headers: {

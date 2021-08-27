@@ -7,7 +7,7 @@
 
         $tablaFinanciera = $wpdb->prefix."financiera";
         $tablaNiveles = $wpdb->prefix."nivelesDeEndeudamiento";
-
+        $cotizaciones = $wpdb->prefix."cotizacion";
         $createdFinanciera = dbDelta("CREATE TABLE $tablaFinanciera
             (
             `id`          int NOT NULL AUTO_INCREMENT ,
@@ -31,6 +31,35 @@
             );"
         );
 
+        $createCotizacion = dbDelta("CREATE TABLE $cotizaciones (
+            `id` INT NOT NULL AUTO_INCREMENT,
+            `cedula` VARCHAR(25) NOT NULL,
+            `contacto` TEXT,
+            `ingresoBruto` Text,
+            `deudaSugef` Text,
+            `cupoCredito` Text,
+            `tipoCambio` Text,
+            `ingresoNeto` Text,
+            `esAsalariado` Text,
+            `rebajoAutomatico` Text,
+            `nivelSugef` Text,
+            `promedioCuotas` Text,
+            `porcentajeDeuda` Text,
+            `creditoColones` Text,
+            `creditoDolares` Text,
+            `tasa` Text,
+            `plazo` Text,
+            `sugerenciaColones` Text,
+            `sugerenciaDolares` Text,
+            `montoSolicitado` Text,
+            `montoCuotaFinal` Text,
+            `emailClient` Text,
+            `productoId` Text,
+            `moneda` Text,
+            PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB;
+        ");
+        
         dbDelta("ALTER TABLE `wp_nivelesdeendeudamiento` 
         ADD CONSTRAINT `Niveles_FK_ProductoId_Financiera_PK_Id` 
         FOREIGN KEY (`productoId`) REFERENCES `wp_financiera`(`id`) 

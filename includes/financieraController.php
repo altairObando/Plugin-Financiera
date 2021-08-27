@@ -1,6 +1,7 @@
 <?php
 
     include(plugin_dir_path(__FILE__).'tasaCambio.php');
+    include(plugin_dir_path(__FILE__).'cotizaciones.php');
     
     function financiera(){
         register_rest_route('financiera/v1','financieras/', [
@@ -50,7 +51,41 @@
                 'productoId' => ['required' => true, 'type' => 'number']
             ]
         ]);
-
+        register_rest_route('financiera/v1', 'cotizacion/',
+            array(
+                // GET
+                array(
+                    "methods" => "GET",
+                    "callback" => "GET_COT",
+                    "args" => [
+                        'cedula' => ['required' => false]
+                    ]
+                    ),
+                // POST
+                array(
+                    "methods" => "POST",
+                    "callback" => "POST_COT",
+                    "args" => [
+                        'cedula' => ['required' => true]
+                    ]
+                    ),
+                // DELETE
+                array(
+                    "methods" => "DELETE",
+                    "callback" => "DELETE_COT",
+                    "args" => [
+                        'id' => ['required' => true]
+                    ]
+                    ),
+                // UPDATE
+                array(
+                    "methods" => "PUT",
+                    "callback" => "PUT_COT",
+                    "args" => [
+                        'id' => ['required' => true]
+                    ]
+                ))
+        );
     };
 
     function get($request){
@@ -66,6 +101,7 @@
         $response = $wpdb->get_results($query, ARRAY_A);
         return rest_ensure_response($response);
     }
+
     function post($request){
         global $wpdb;
         $tablaFinanciera = $wpdb->prefix."financiera";
