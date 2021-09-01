@@ -1,31 +1,31 @@
 <?php
-    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-    
-    function GET_COT($request){
-        $cotizacion = parseRequest($request);
-        
+require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+include(plugin_dir_path(__FILE__).'includes/BL/Cotizacion.php');
+public static class CotizacionController
+{
+    public static function GET_COT($request){
+        $cotizacion = self::parseRequest($request);        
         if(in_array("cedula", $cotizacion))
-            return rest_ensure_response(GetCotizacion($cotizacion->cedula));
-        return rest_ensure_response(GetCotizaciones());
+            return rest_ensure_response(Cotizacion::GetCotizacion($cotizacion->cedula));
+        return rest_ensure_response(Cotizacion::GetCotizaciones());
     }
     
-    function POST_COT($request){
-        $cotizacion = parseRequest($request);
-        return rest_ensure_response(SaveCotizacion($cotizacion));
+    public static function POST_COT($request){
+        $cotizacion = self::parseRequest($request);
+        return rest_ensure_response(Cotizacion::SaveCotizacion($cotizacion));
     }
 
-    function PUT_COT($request){
-        $cotizacion = parseRequest($request);
-        return rest_ensure_response(UpdateCotizacion($cotizacion));
+    public static function PUT_COT($request){
+        $cotizacion = self::parseRequest($request);
+        return rest_ensure_response(Cotizacion::UpdateCotizacion($cotizacion));
     }
 
-    function DELETE_COT($request){
-        $cotizacion = parseRequest($request);
-        return rest_ensure_response(DeleteCotizacion($cotizacion));
+    public static function DELETE_COT($request){
+        $cotizacion = self::parseRequest($request);
+        return rest_ensure_response(Cotizacion::DeleteCotizacion($cotizacion));
     }
-
-
-    function parseRequest($request){
+    
+    private static function parseRequest($request){
 
         $cotiza = array(
                 'id' => $request->get_param('id'),
@@ -56,31 +56,5 @@
         );
         return $cotiza;
     }
-
-    function GetCotizaciones(){
-        global $wpdb;
-        $cotizacion = $wpdb->prefix."cotizacion";
-        return $wpdb->get_results("SELECT * FROM $cotizacion", ARRAY_A);
-    }
-
-    function GetCotizacion($cedula){
-        global $wpdb;
-        $cotizacion = $wpdb->prefix."cotizacion";
-        return $wpdb->get_results("SELECT * FROM $cotizacion where cedula LIKE '%$cedula%' ORDER BY ID DESC", ARRAY_A);
-    }
-
-    function SaveCotizacion($nueva_cotizacion){
-        global $wpdb;
-        return $wpdb->insert($cotizacion, $nueva_cotizacion);
-    }
-    function UpdateCotizacion($updated_cotizacion,  $id){
-        global $wpdb;
-        return $wpdb->update($cotizacion, $updated_cotizacion, $id);
-    }
-
-    function DeleteCotizacion($updated_cotizacion,  $id){
-        global $wpdb;
-        return $wpdb->delete($cotizacion, $updated_cotizacion, $id);
-    }
-
+}
 ?>

@@ -1,24 +1,11 @@
 <?php
-
     require_once(ABSPATH.'wp-admin/includes/upgrade.php');
 
     function register_tables(){
         global $wpdb;
-
-        $tablaFinanciera = $wpdb->prefix."financiera";
-        $tablaNiveles = $wpdb->prefix."nivelesDeEndeudamiento";
-        $cotizaciones = $wpdb->prefix."cotizacion";
-        $createdFinanciera = dbDelta("CREATE TABLE $tablaFinanciera
-            (
-            `id`          int NOT NULL AUTO_INCREMENT ,
-            `nombre`      varchar(45) NOT NULL ,
-            `descripcion` varchar(250) NULL ,
-            `tasa`        decimal(16,4) NOT NULL ,
-            `cuotas`      int NOT NULL ,
-            `dac`         varchar(50000) NOT NULL ,
-            PRIMARY KEY (`id`));");
-            
-        $crearNiveles = dbDelta("CREATE TABLE $tablaNiveles
+        $configProducto = BaseHelper::$configProducto;
+        $cotizaciones   = BaseHelper::$cotizaciones;
+        dbDelta("CREATE TABLE $configProducto
             (
             `id`                  int NOT NULL AUTO_INCREMENT,
             `productoId`          int NOT NULL,
@@ -31,7 +18,7 @@
             );"
         );
 
-        $createCotizacion = dbDelta("CREATE TABLE $cotizaciones (
+        dbDelta("CREATE TABLE $cotizaciones (
             `id` INT NOT NULL AUTO_INCREMENT,
             `cedula` VARCHAR(25) NOT NULL,
             `contacto` TEXT,
@@ -59,22 +46,16 @@
             PRIMARY KEY (`id`)
         ) ENGINE=InnoDB;
         ");
-        
-        dbDelta("ALTER TABLE `wp_nivelesdeendeudamiento` 
-        ADD CONSTRAINT `Niveles_FK_ProductoId_Financiera_PK_Id` 
-        FOREIGN KEY (`productoId`) REFERENCES `wp_financiera`(`id`) 
-        ON DELETE CASCADE 
-        ON UPDATE CASCADE;");
 
     }
 
     function delete_tables(){
-        $tablaFinanciera = $wpdb->prefix."financiera";
-        $tablaClientes = $wpdb->prefix."clientes";
+        $configProducto = BaseHelper::$configProducto;
+        $cotizaciones   = BaseHelper::$cotizaciones;
 
         global $wpdb;
-        dbDelta('DROP TABLE '.$tablaFinanciera);
-        dbDelta('DROP TABLE '.$tablaClientes);
+        dbDelta('DROP TABLE '.$configProducto);
+        dbDelta('DROP TABLE '.$cotizaciones);
         
     }
 

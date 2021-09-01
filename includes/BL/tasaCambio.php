@@ -1,4 +1,6 @@
 <?php
+require_once(ABSPATH.'wp-admin/includes/upgrade.php');
+
 function get_tasa_cambio()
  {
     //url del servicio BCR
